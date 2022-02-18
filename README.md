@@ -1,11 +1,11 @@
-> Voor een up-to-date versie van deze pagina:  
-> https://github.com/gardan4/JMMY-InspanningAI/wiki
 
 # Project [iDBPS] Inspanning meten met AI
 > Project 8 van _BD02_, Blok 3 leerjaar 3 2022.   
-> Uitgevoerd door projectgroep 8 (JMMY)
+> Uitgevoerd door projectgroep 8 (JMMY)  
+> Voor een up-to-date versie van deze pagina:  
+> https://github.com/gardan4/JMMY-InspanningAI/wiki
 
-### De projectgroep:
+## De projectgroep:
 * Maarten Maessen (1916580)
 * Jos van Schaijk (2066107)
 * Marc Meijers (1908480)
