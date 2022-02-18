@@ -68,6 +68,13 @@ with mp_face_mesh.FaceMesh(
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = face_mesh.process(image)
 
+        #Coordinatenlijst verkrijgen
+        lijst = []
+        for i in results.multi_face_landmarks:
+            for g in range(0, len(i.landmark)):
+                lijst.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
+            # print(lijst)
+
         # Draw the face mesh annotations on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
