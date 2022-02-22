@@ -95,11 +95,14 @@ def webcam_mesh(mp_drawing, mp_drawing_styles, mp_face_mesh):
             hiermee proberen we de punten van gezichten op te slaan 
             zodat deze herkend kunnen worden.  
             '''
-            lijst = []
-            for i in results.multi_face_landmarks:
-                for g in range(0, len(i.landmark)):
-                    lijst.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
-                # print(lijst)
+            try:
+                lijst = []
+                for i in results.multi_face_landmarks:
+                    for g in range(0, len(i.landmark)):
+                        lijst.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
+                    # print(lijst)
+            except:
+                pass
 
             # Draw the face mesh annotations on the image.
             image.flags.writeable = True
