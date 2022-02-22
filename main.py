@@ -30,7 +30,10 @@ if __name__ == '__main__':
             install_deps.unattended_install()
 
         elif choice == "2":
-            mediapipe_demo.main_program()
+            try:
+                mediapipe_demo.main_program()
+            except TypeError:
+                print(f"Mediapipe has crashed. Your face was not detected. ")
 
         else:
             print(f"Option {choice} was either not found or not yet implemented!")
