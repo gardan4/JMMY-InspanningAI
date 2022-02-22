@@ -10,7 +10,12 @@ def main_program():
     print("\n----------\n"
           "Which would you like to mesh?\n"
           "Static Image (option 1) or Live WebCam (option 2)")
-    option = int(input("Choose: "))
+    option = input("Choose: ")
+    
+    try:
+        option = int(option)
+    except ValueError:
+        print(f"{option} is not a number!")
 
     if option == 1:
         print("Provide the IMG files: ")
@@ -19,14 +24,38 @@ def main_program():
 
     elif option == 2:
         print("Press Escape button to exit!")
-        webcam_mesh(drawing, drawing_styles, face_mesh)
+        option = input("Do you want coordslist? (0/1) ")
+
+        try:
+            option = int(option)
+        except ValueError:
+            print(f"{option} is not a number!")
+
+        webcam_mesh(option, drawing, drawing_styles, face_mesh)
 
     else:
         print(f"Option {option} was not found!\n")
 
+def get_coords_list(_option, _results):
+    '''
+    Toevoeging van de projectgroep,
+    hiermee proberen we de punten van gezichten op te slaan
+    zodat deze herkend kunnen worden.
+    '''
+    try:
+        coords_list = []
+        for i in _results.multi_face_landmarks:
+            for g in range(0, len(i.landmark)):
+                coords_list.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
+            if _option == 1:
+                print(coords_list)
+            else:
+                pass
+    except:
+        pass
 
 # For static images:
-def static_images(_img_list, mp_drawing, mp_drawing_styles, mp_face_mesh):
+def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh):
     drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
     with mp_face_mesh.FaceMesh(
             static_image_mode=True,
@@ -69,7 +98,7 @@ def static_images(_img_list, mp_drawing, mp_drawing_styles, mp_face_mesh):
 
 
 # For webcam input
-def webcam_mesh(mp_drawing, mp_drawing_styles, mp_face_mesh):
+def webcam_mesh(option, mp_drawing, mp_drawing_styles, mp_face_mesh):
     drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
     cap = cv2.VideoCapture(0)
     with mp_face_mesh.FaceMesh(
@@ -90,19 +119,8 @@ def webcam_mesh(mp_drawing, mp_drawing_styles, mp_face_mesh):
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = face_mesh.process(image)
 
-            '''
-            Toevoeging van de projectgroep, 
-            hiermee proberen we de punten van gezichten op te slaan 
-            zodat deze herkend kunnen worden.  
-            '''
-            try:
-                lijst = []
-                for i in results.multi_face_landmarks:
-                    for g in range(0, len(i.landmark)):
-                        lijst.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
-                    # print(lijst)
-            except:
-                pass
+            '''Toevoeging casusgroep:'''
+            get_coords_list(option, results)
 
             # Draw the face mesh annotations on the image.
             image.flags.writeable = True
