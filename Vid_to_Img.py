@@ -5,14 +5,15 @@ def vidToImg():
     # Read the video from specified path
     vidpath = input("URL to Video: ")
     cam = cv2.VideoCapture(vidpath)
+
     try:
         # creating a folder named data
-        if not os.path.exists('VidToImgData'):
-            os.makedirs('VidToImgData')
+        if not os.path.exists('vidtoIMG_OUTPUT'):
+            os.makedirs('vidtoIMG_OUTPUT')
 
     # if not created then raise error
     except OSError:
-        print('Error: Creating directory of data')
+        print('Foutmelding: Kan geen folder aanmaken.')
 
     # frame
     currentframe = 0
@@ -23,7 +24,7 @@ def vidToImg():
 
         if ret:
             # if video is still left continue creating images
-            name = './VidToImgData/frame' + str(currentframe) + '.jpg'
+            name = './vidtoIMG_OUTPUT/frame' + str(currentframe) + '.jpg'
             print('Creating...' + name)
 
             # writing the extracted images
