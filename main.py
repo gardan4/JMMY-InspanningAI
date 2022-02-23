@@ -1,5 +1,5 @@
 import mediapipe_demo
-import Vid_to_Img as vidtoImg
+import vid_to_img as vidtoImg
 import install_deps
 
 menu = {
