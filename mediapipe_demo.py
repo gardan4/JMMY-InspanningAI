@@ -11,7 +11,7 @@ def main_program():
           "Which would you like to mesh?\n"
           "Static Image (option 1) or Live WebCam (option 2)")
     option = input("Choose: ")
-    
+
     try:
         option = int(option)
     except ValueError:
