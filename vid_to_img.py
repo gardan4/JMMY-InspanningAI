@@ -1,7 +1,8 @@
 import cv2
 import os
 
-def vidToImg():
+
+def vid_to_img():
     # Read the video from specified path
     vidpath = input("URL to Video: ")
     cam = cv2.VideoCapture(vidpath)
@@ -13,12 +14,12 @@ def vidToImg():
 
     # if not created then raise error
     except OSError:
-        print('Foutmelding: Kan geen folder aanmaken.')
+        print("Error: Can't create a folder here.")
 
     # frame
     currentframe = 0
 
-    while (True):
+    while True:
         # reading from frame
         ret, frame = cam.read()
 
@@ -39,3 +40,7 @@ def vidToImg():
     # Release all space and windows once done
     cam.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    vid_to_img()
