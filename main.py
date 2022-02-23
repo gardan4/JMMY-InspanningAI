@@ -1,11 +1,12 @@
 import mediapipe_demo
+import Vid_to_Img
 import install_deps
 
 menu = {
     '0': "Exit Programma",
     '1': "Install Dependencies",
     '2': "Demo MediaPipe (Facemesh)",
-    '3': "What's its gonna be..?",
+    '3': "vid to img",
     '4': "Find out next week!"
 }
 
@@ -34,6 +35,10 @@ if __name__ == '__main__':
                 mediapipe_demo.main_program()
             except TypeError:
                 print(f"Mediapipe has crashed. Your face was not detected. ")
+
+        elif choice == "3":
+            Vid_to_Img.vidToImg()
+
 
         else:
             print(f"Option {choice} was either not found or not yet implemented!")
