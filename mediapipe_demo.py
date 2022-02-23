@@ -1,55 +1,78 @@
 import os
-
 import cv2
 import mediapipe as mp
 
 
-def main_program():
-    # Initialize scripts
+def menu():
+    # Initialize variables for the code:
     drawing = mp.solutions.drawing_utils
     drawing_styles = mp.solutions.drawing_styles
     face_mesh = mp.solutions.face_mesh
-    print("\n----------\n"
-          "Which would you like to mesh?\n"
-          "Static Image (option 1) or Live WebCam (option 2)")
-    option = input("Choose: ")
+    flag = True
 
-    try:
-        option = int(option)
-    except ValueError:
-        print(f"{option} is not a number!")
-
-    if option == 1:
-        print("Format: 'C:/Path/To/Img.png/' with commas in between files. \n"
-              "\nExample: 'C:/Users/admin/etc/img.png/','C:/Users/admin/etc/img2.png/','C:/Users/admin/etc/img3.png/'"
-              "\nProvide the IMG files: ")
-
-        usr_input = str(input())
-        img_list = usr_input.split(",")
-        option = input("Do you want coordslist? (0/1) ")
-
-        try:
-            option = int(option)
-            static_images(option, img_list, drawing, drawing_styles, face_mesh)
-        except ValueError:
-            print(f"{option} is not a number!")
-            static_images(0, img_list, drawing, drawing_styles, face_mesh)
-
-
-
-    elif option == 2:
-        print("Press Escape button to exit!")
-        option = input("Do you want coordslist? (0/1) ")
+    # Menu
+    while flag:
+        print("\n----------\n"
+              "Which would you like to mesh?\n"
+              "1. Static Images\n"
+              "2. A live Webcam Feed\n"
+              "3. A video (converts the video to images,"
+              "then processes the images and deletes them after)"
+              )
+        option = input("Choose: ")
 
         try:
             option = int(option)
         except ValueError:
             print(f"{option} is not a number!")
 
-        webcam_mesh(option, drawing, drawing_styles, face_mesh)
+        # Static Images
+        if option == 1:
+            flag = False
+            print("Format: C:/Path/To/Img.png/ with commas in between files. \n"
+                  "\nExample: ':/Users/admin/etc/img.png/,C:/Users/admin/etc/img2.png/,C:/Users/admin/etc/img3.png/"
+                  "\nProvide the IMG files: ")
 
-    else:
-        print(f"Option {option} was not found!\n")
+            usr_input = str(input())
+            img_list = usr_input.split(",")
+            option = input("Would you like to print the coordinates? (0/1)")
+
+            try:
+                option = int(option)
+                if option < 0 or option > 1:
+                    print(f"{option} is not a valid number!\n"
+                          f"Choosing default...")
+                    static_images(0, drawing, drawing_styles, face_mesh)
+                    break
+                static_images(option, img_list, drawing, drawing_styles, face_mesh)
+            except ValueError:
+                print(f"{option} is not a valid number!\n"
+                      f"Choosing default...")
+                static_images(0, drawing, drawing_styles, face_mesh)
+
+        # Live Webcam Feed
+        elif option == 2:
+            print("Press Escape button to exit!")
+            option = input("Would you like to print the coordinates? \n"
+                           "(No: 0 / Yes: 1)\n"
+                           "Default: No (0)")
+
+            try:
+                option = int(option)
+                if option < 0 or option > 1:
+                    print(f"{option} is not a valid number!\n"
+                          f"Choosing default...")
+                    webcam_mesh(0, drawing, drawing_styles, face_mesh)
+                    break
+                webcam_mesh(option, drawing, drawing_styles, face_mesh)
+
+            except ValueError:
+                print(f"{option} is not a number!\n"
+                      f"Choosing default...")
+                webcam_mesh(0, drawing, drawing_styles, face_mesh)
+
+        else:
+            print(f"Option {option} was not found!\n")
 
 
 def get_coords_list(_option, _results):
@@ -67,6 +90,7 @@ def get_coords_list(_option, _results):
                 print(coords_list)
             else:
                 pass
+    # TODO: Error catching cleanup
     except:
         pass
 
@@ -82,7 +106,7 @@ def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh
             os.makedirs('staticImg_OUTPUT')
 
     except OSError:
-        print('Foutmelding: Kan geen folder aanmaken.')
+        print("Error: Can't create a folder here.")
 
     with mp_face_mesh.FaceMesh(
             static_image_mode=True,
@@ -173,19 +197,19 @@ def webcam_mesh(option, mp_drawing, mp_drawing_styles, mp_face_mesh):
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles
                             .get_default_face_mesh_tesselation_style())
-                    # mp_drawing.draw_landmarks(
-                    #     image=image,
-                    #     landmark_list=face_landmarks,
-                    #     connections=mp_face_mesh.FACEMESH_FACE_OVAL,
-                    #     landmark_drawing_spec=None,
-                    #     connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style())
-                    # mp_drawing.draw_landmarks(
-                    #     image=image,
-                    #     landmark_list=face_landmarks,
-                    #     connections=mp_face_mesh.FACEMESH_IRISES,
-                    #     landmark_drawing_spec=None,
-                    #     connection_drawing_spec=mp_drawing_styles
-                    #         .get_default_face_mesh_iris_connections_style())
+                    mp_drawing.draw_landmarks(
+                        image=image,
+                        landmark_list=face_landmarks,
+                        connections=mp_face_mesh.FACEMESH_FACE_OVAL,
+                        landmark_drawing_spec=None,
+                        connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style())
+                    mp_drawing.draw_landmarks(
+                        image=image,
+                        landmark_list=face_landmarks,
+                        connections=mp_face_mesh.FACEMESH_IRISES,
+                        landmark_drawing_spec=None,
+                        connection_drawing_spec=mp_drawing_styles
+                            .get_default_face_mesh_iris_connections_style())
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
@@ -195,4 +219,4 @@ def webcam_mesh(option, mp_drawing, mp_drawing_styles, mp_face_mesh):
 
 
 if __name__ == '__main__':
-    main_program()
+    menu()
