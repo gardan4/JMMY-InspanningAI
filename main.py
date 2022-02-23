@@ -1,5 +1,5 @@
 import mediapipe_demo
-import Vid_to_Img
+import Vid_to_Img as vidtoImg
 import install_deps
 
 menu = {
@@ -37,7 +37,7 @@ if __name__ == '__main__':
                 print(f"Mediapipe has crashed. Your face was not detected. ")
 
         elif choice == "3":
-            Vid_to_Img.vidToImg()
+            vidtoImg.vidToImg()
 
 
         else:
