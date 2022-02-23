@@ -49,6 +49,7 @@ def main_program():
     else:
         print(f"Option {option} was not found!\n")
 
+
 def get_coords_list(_option, _results):
     '''
     Toevoeging van de projectgroep,
@@ -67,14 +68,17 @@ def get_coords_list(_option, _results):
     except:
         pass
 
+
 # For static images:
 def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh):
     drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+
     with mp_face_mesh.FaceMesh(
             static_image_mode=True,
             max_num_faces=1,
             refine_landmarks=True,
             min_detection_confidence=0.5) as face_mesh:
+
         for file in _img_list:
             image = cv2.imread(file)
             # Convert the BGR image to RGB before processing.
@@ -84,30 +88,37 @@ def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh
             if not results.multi_face_landmarks:
                 continue
             annotated_image = image.copy()
+
             for face_landmarks in results.multi_face_landmarks:
-                print('face_landmarks:', face_landmarks)
-                mp_drawing.draw_landmarks(
-                    image=annotated_image,
-                    landmark_list=face_landmarks,
-                    connections=mp_face_mesh.FACEMESH_TESSELATION,
-                    landmark_drawing_spec=None,
-                    connection_drawing_spec=mp_drawing_styles
+
+                '''Checkt of de landmarks geprint moeten worden naar console!'''
+                if option == 1:
+                    print('face_landmarks:', face_landmarks)
+
+                else:
+                    mp_drawing.draw_landmarks(
+                        image=annotated_image,
+                        landmark_list=face_landmarks,
+                        connections=mp_face_mesh.FACEMESH_TESSELATION,
+                        landmark_drawing_spec=None,
+                        connection_drawing_spec=mp_drawing_styles
                         .get_default_face_mesh_tesselation_style())
-                mp_drawing.draw_landmarks(
-                    image=annotated_image,
-                    landmark_list=face_landmarks,
-                    connections=mp_face_mesh.FACEMESH_CONTOURS,
-                    landmark_drawing_spec=None,
-                    connection_drawing_spec=mp_drawing_styles
+                    mp_drawing.draw_landmarks(
+                        image=annotated_image,
+                        landmark_list=face_landmarks,
+                        connections=mp_face_mesh.FACEMESH_CONTOURS,
+                        landmark_drawing_spec=None,
+                        connection_drawing_spec=mp_drawing_styles
                         .get_default_face_mesh_contours_style())
-                mp_drawing.draw_landmarks(
-                    image=annotated_image,
-                    landmark_list=face_landmarks,
-                    connections=mp_face_mesh.FACEMESH_IRISES,
-                    landmark_drawing_spec=None,
-                    connection_drawing_spec=mp_drawing_styles
+                    mp_drawing.draw_landmarks(
+                        image=annotated_image,
+                        landmark_list=face_landmarks,
+                        connections=mp_face_mesh.FACEMESH_IRISES,
+                        landmark_drawing_spec=None,
+                        connection_drawing_spec=mp_drawing_styles
                         .get_default_face_mesh_iris_connections_style())
-            cv2.imwrite('./' + "test" + '.png', annotated_image)
+
+                cv2.imwrite('./' + "test" + '.png', annotated_image)
 
 
 # For webcam input
