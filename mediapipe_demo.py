@@ -71,7 +71,7 @@ def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh
             max_num_faces=1,
             refine_landmarks=True,
             min_detection_confidence=0.5) as face_mesh:
-        for idx, file in enumerate(_img_list):
+        for file in _img_list:
             image = cv2.imread(file)
             # Convert the BGR image to RGB before processing.
             results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -103,7 +103,7 @@ def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh
                     landmark_drawing_spec=None,
                     connection_drawing_spec=mp_drawing_styles
                         .get_default_face_mesh_iris_connections_style())
-            cv2.imwrite('/tmp/annotated_image' + str(idx) + '.png', annotated_image)
+            cv2.imwrite('./' + "test" + '.png', annotated_image)
 
 
 # For webcam input
