@@ -18,9 +18,18 @@ def main_program():
         print(f"{option} is not a number!")
 
     if option == 1:
-        print("Provide the IMG files: ")
-        img_list = list(input())
-        static_images(img_list, drawing, drawing_styles, face_mesh)
+        print("Format: 'C:/Users/admin/etc/img.png/' with commas in between files. "
+              "\nExample: 'C:/Users/admin/etc/img.png/','C:/Users/admin/etc/img2.png/','C:/Users/admin/etc/img3.png/'"
+              "\nProvide the IMG files: ")
+        img_list = [input()]
+        img_list.split(",")
+        option = input("Do you want coordslist? (0/1) ")
+
+        try:
+            option = int(option)
+        except ValueError:
+            print(f"{option} is not a number!")
+        static_images(option, img_list, drawing, drawing_styles, face_mesh)
 
     elif option == 2:
         print("Press Escape button to exit!")
