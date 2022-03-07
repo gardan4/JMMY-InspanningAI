@@ -71,6 +71,9 @@ def menu():
                       f"Choosing default...")
                 webcam_mesh(0, drawing, drawing_styles, face_mesh)
 
+            except UnicodeDecodeError:
+                print(f"UnicodeDecodeError, the code closed with an internal (known) error.")
+
         else:
             print(f"Option {option} was not found!\n")
 
@@ -137,21 +140,21 @@ def static_images(option, _img_list, mp_drawing, mp_drawing_styles, mp_face_mesh
                         connections=mp_face_mesh.FACEMESH_TESSELATION,
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles
-                        .get_default_face_mesh_tesselation_style())
+                            .get_default_face_mesh_tesselation_style())
                     mp_drawing.draw_landmarks(
                         image=annotated_image,
                         landmark_list=face_landmarks,
                         connections=mp_face_mesh.FACEMESH_CONTOURS,
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles
-                        .get_default_face_mesh_contours_style())
+                            .get_default_face_mesh_contours_style())
                     mp_drawing.draw_landmarks(
                         image=annotated_image,
                         landmark_list=face_landmarks,
                         connections=mp_face_mesh.FACEMESH_IRISES,
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles
-                        .get_default_face_mesh_iris_connections_style())
+                            .get_default_face_mesh_iris_connections_style())
 
                 name = './staticImg_OUTPUT/testImage' + str(count) + '.png'
                 print('Creating...' + name)
@@ -202,7 +205,8 @@ def webcam_mesh(option, mp_drawing, mp_drawing_styles, mp_face_mesh):
                         landmark_list=face_landmarks,
                         connections=mp_face_mesh.FACEMESH_FACE_OVAL,
                         landmark_drawing_spec=None,
-                        connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_contours_style())
+                        connection_drawing_spec=mp_drawing_styles
+                            .get_default_face_mesh_contours_style())
                     mp_drawing.draw_landmarks(
                         image=image,
                         landmark_list=face_landmarks,
