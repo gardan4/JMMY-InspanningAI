@@ -48,4 +48,4 @@ if __name__ == '__main__':
     print("Welcome!")
 
     while flag:
-        main_menu(menu)
+        flag = main_menu(menu)
