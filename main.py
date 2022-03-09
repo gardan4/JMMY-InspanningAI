@@ -1,13 +1,14 @@
 import mediapipe_demo
 import vid_to_img
 import install_deps
+import generate_data_from_video
 
 menu = {
     '0': "Exit program",
     '1': "Install Dependencies",
     '2': "Demo MediaPipe (Facemesh)",
     '3': "Convert a video to images",
-    '4': "Find out next week!"
+    '4': "Apply facemesh to video!"
 }
 
 
@@ -35,6 +36,10 @@ def main_menu(option_dic):
 
     elif choice == "3":
         vid_to_img.vid_to_img()
+        return True
+
+    elif choice == "4":
+        generate_data_from_video.run()
         return True
 
     else:

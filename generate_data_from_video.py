@@ -106,10 +106,14 @@ def program(cap, out, mp_face_mesh, mp_drawing, mp_drawing_styles):
     cap.release()
     out.release()
 
+def run():
+    video_path = input("File: ")
+    mediapipe_drawing, mediapipe_face_mesh, mediapipe_drawing_styles, capture = startup(video_path)
+    output1 = output(video_path, capture)
+    program(capture, output1, mediapipe_face_mesh, mediapipe_drawing, mediapipe_drawing_styles)
 
 if __name__ == '__main__':
-    print("File: ")
-    video_path = input()
+    video_path = input("File: ")
     mediapipe_drawing, mediapipe_face_mesh, mediapipe_drawing_styles, capture = startup(video_path)
-    output = output(video_path, capture)
-    program(capture, output, mediapipe_face_mesh, mediapipe_drawing, mediapipe_drawing_styles)
+    output1 = output(video_path, capture)
+    program(capture, output1, mediapipe_face_mesh, mediapipe_drawing, mediapipe_drawing_styles)
