@@ -4,6 +4,7 @@ import sys
 
 package_list = [
     "mediapipe",
+    "json",
     "opencv-python"
     ]
 
