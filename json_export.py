@@ -12,6 +12,7 @@ def export_dump(to_export, out_file):
         print(e)
 
 
+# Currently, not used
 def export_pretty(to_export, out_file):
     try:
         # TODO: PRETTY JSON

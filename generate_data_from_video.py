@@ -131,7 +131,7 @@ def program(cap, out, mp_face_mesh, mp_drawing, mp_drawing_styles, _video_path):
                 for g in range(0, len(i.landmark)):
                     face_landmarks_dict[frame_counter][g] = []
                     face_landmarks_dict[frame_counter][g].append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
-                    face_landmarks_dict[frame_counter][g] = str(face_landmarks_dict[frame_counter][g][0])
+                    # face_landmarks_dict[frame_counter][g] = str(face_landmarks_dict[frame_counter][g][0])
         # TODO: Error catching cleanup
         except TypeError:
             pass
@@ -151,11 +151,14 @@ def program(cap, out, mp_face_mesh, mp_drawing, mp_drawing_styles, _video_path):
     out.release()
 
 
-def run():
-    vid = input("File: ")
+def auto_run():
+    print("\n"*3)
+    vid = input("Provide the path to a video file\n"
+                "Example: C:/Users/admin/video/video.mp4\n"
+                "Path: ")
     mp_d, mp_mesh, mp_dstyle, c = startup(video_path)
     output_file = output(vid, v)
-    program(c, output_file, mp_mesh, mp_d, mp_dstyle)
+    program(c, output_file, mp_mesh, mp_d, mp_dstyle, video_path)
 
 
 if __name__ == '__main__':

@@ -39,7 +39,10 @@ def main_menu(option_dic):
         return True
 
     elif choice == "4":
-        generate_data_from_video.run()
+        try:
+            generate_data_from_video.auto_run()
+        except Exception as e:
+            print(f"The program has crashed with error: {e}")
         return True
 
     else:
