@@ -156,13 +156,10 @@ def auto_run():
     vid = input("Provide the path to a video file\n"
                 "Example: C:/Users/admin/video/video.mp4\n"
                 "Path: ")
-    mp_d, mp_mesh, mp_dstyle, c = startup(video_path)
-    output_file = output(vid, v)
-    program(c, output_file, mp_mesh, mp_d, mp_dstyle, video_path)
+    mp_d, mp_mesh, mp_dstyle, c = startup(vid)
+    output_file = output(vid, c)
+    program(c, output_file, mp_mesh, mp_d, mp_dstyle, vid)
 
 
 if __name__ == '__main__':
-    video_path = input("File: ")
-    mediapipe_drawing, mediapipe_face_mesh, mediapipe_drawing_styles, capture = startup(video_path)
-    output1 = output(video_path, capture)
-    program(capture, output1, mediapipe_face_mesh, mediapipe_drawing, mediapipe_drawing_styles, video_path)
+    auto_run()
