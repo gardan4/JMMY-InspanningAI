@@ -1,14 +1,14 @@
 import mediapipe_demo
-import vid_to_img
+import OLD_vid_to_img
 import install_deps
-import generate_data_from_video
+import data_generator
 
 menu = {
     '0': "Exit program",
     '1': "Install Dependencies",
     '2': "Demo MediaPipe (Facemesh)",
     '3': "Convert a video to images",
-    '4': "Apply facemesh to video!"
+    '4': "Generate Trainingsdata form a video"
 }
 
 
@@ -30,8 +30,10 @@ def main_menu(option_dic):
     elif choice == "2":
         try:
             mediapipe_demo.menu()
-        except TypeError:
-            print(f"Mediapipe has crashed. Your face was not detected. ")
+        except Exception as e:
+            print(f"Error: {e}\n"
+                  f"Either Mediapipe has crashed, "
+                  f"or Your face was not found. ")
         return True
 
     elif choice == "3":
@@ -40,7 +42,7 @@ def main_menu(option_dic):
 
     elif choice == "4":
         try:
-            generate_data_from_video.auto_run()
+            data_generator.auto_run()
         except Exception as e:
             print(f"The program has crashed with error: {e}")
         return True

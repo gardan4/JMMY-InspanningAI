@@ -48,7 +48,7 @@ class Generator:
         # Running functions for setup
         self.file_name = self.get_file_name()
         self.capture = self.open_capture()
-        self.cv2Writer = self.make_encoder()
+        self.encoder = self.make_encoder()
 
     def get_file_name(self):
         file_name = self.vid_path[self.vid_path.rfind('/') + 1:]
@@ -113,14 +113,14 @@ class Generator:
             if self.results.multi_face_landmarks:
                 self.draw()
                 self.add_text(frame_counter)
-                self.cv2Writer.write(self.image)
+                self.encoder.write(self.image)
                 self.add_data_points(frame_counter)
 
         # Closing and cleaning up
         self.make_json_file()
         self.face_mesh.close()
         self.capture.release()
-        self.cv2Writer.release()
+        self.encoder.release()
 
     def draw(self):
         for face_landmarks in self.results.multi_face_landmarks:
