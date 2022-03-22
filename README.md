@@ -1,6 +1,3 @@
-### Checkt PyLint for linting:
-[![Pylint](https://github.com/gardan4/JMMY-InspanningAI/actions/workflows/pylint.yml/badge.svg)](https://github.com/gardan4/JMMY-InspanningAI/actions/workflows/pylint.yml)
-
 # Project [iDBPS] Inspanning meten met AI
 > Project 8 van _BD02_, Blok 3 leerjaar 3 2022.   
 > Uitgevoerd door projectgroep 8 (JMMY)  
