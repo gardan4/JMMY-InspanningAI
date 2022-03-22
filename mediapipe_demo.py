@@ -1,6 +1,7 @@
 import os
 import cv2
 import mediapipe as mp
+import json_export as jsonexporter
 
 
 def menu():
@@ -90,7 +91,7 @@ def get_coords_list(_option, _results):
             for g in range(0, len(i.landmark)):
                 coords_list.append([i.landmark[g].x, i.landmark[g].y, i.landmark[g].z])
             if _option == 1:
-                print(coords_list)
+                jsonexporter.export(coords_list)
             else:
                 pass
     # TODO: Error catching cleanup
