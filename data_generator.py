@@ -5,6 +5,7 @@ import sys
 import os
 import time
 import json_export as json
+import pandas as pd
 
 
 class Generator:
@@ -16,18 +17,17 @@ class Generator:
 
         # Parameters for text
         self.font = cv2.FONT_HERSHEY_SIMPLEX
-        self.font_scale = 3.5
+        self.font_scale = 1
         self.text_color = (255, 255, 255)
         self.line_type = 2
-        self.thickness = 5
-        self.standard_text_offset = 20
+        self.thickness = 2
+        self.standard_text_offset = 15
 
         # Parameters for face meshing and drawing lines
         self.drawing_spec = self.mp_drawing.DrawingSpec(
             thickness=1,
             circle_radius=1
         )
-
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             max_num_faces=1,
             refine_landmarks=True,
@@ -38,8 +38,12 @@ class Generator:
         # Setting up vars to filled later
         self.frame_height = None
         self.frame_width = None
+        self.fps = None
         self.results = None
         self.image = None
+        self.time_stamp = None
+        self.heart_rate = None
+        self.wattage = None
 
         # Initial setup for program
         self.vid_path = vid_path
@@ -49,6 +53,7 @@ class Generator:
         self.file_name = self.get_file_name()
         self.capture = self.open_capture()
         self.encoder = self.make_encoder()
+        self.data_table = self.make_panda_table()
 
     def get_file_name(self):
         file_name = self.vid_path[self.vid_path.rfind('/') + 1:]
@@ -67,7 +72,8 @@ class Generator:
         # Gathering some info about the input-file
         self.frame_width = int(self.capture.get(3))
         self.frame_height = int(self.capture.get(4))
-        fps = int(self.capture.get(5))
+        self.fps = int(self.capture.get(5))
+        self.data_interval = int(1000/self.fps)
 
         # Check and make sure the output folder exists.
         try:
@@ -83,8 +89,12 @@ class Generator:
         out_filename = f'generateData_OUTPUT/{self.file_name}_trainingsData.mp4'
 
         # Make the video encoder:
-        encoder = cv2.VideoWriter(out_filename, fourcc, fps, (self.frame_width, self.frame_height))
+        encoder = cv2.VideoWriter(out_filename, fourcc, self.fps, (self.frame_width, self.frame_height))
         return encoder
+
+    def make_panda_table(self):
+        return pd.read_csv(f"test_data/220316_1023_JOS.csv", sep=";")
+        return pd.read_csv(f"test_data/{self.file_name}.csv", sep=";")
 
     def generate_data(self):
         # Editing the capture, frame by frame.
@@ -112,7 +122,16 @@ class Generator:
             # IF the list with landmarks exists, we draw our information on it
             if self.results.multi_face_landmarks:
                 self.draw()
-                self.add_text(frame_counter)
+                print(f"Frame: {frame_counter}")
+
+                self.get_data_for_frame(frame_counter)
+                self.add_text(self.heart_rate, "TL")
+                self.add_text(self.wattage, "BL")
+
+                frame_id = f"Frame: {frame_counter} - TS: {self.time_stamp}"
+                self.add_text(frame_id, "BR")
+
+                # Write the IMG and save the facemesh coords
                 self.encoder.write(self.image)
                 self.add_data_points(frame_counter)
 
@@ -151,20 +170,58 @@ class Generator:
                 connection_drawing_spec=self.mp_drawing_styles
                 .get_default_face_mesh_iris_connections_style())
 
-    def add_text(self, text):
-        text_str = str(text)
+    def get_text_coords(self, text_str, location):
         text_size = cv2.getTextSize(text_str, self.font, self.font_scale, self.thickness)[0]
-        text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
-        text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
-        text_coords = (int(text_x), int(text_y))
 
+        if location == "TL": # Top Left 
+            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
+            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
+
+        elif location == "TR": # Top Right 
+            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
+
+        elif location == "BL":  # Bottom Left 
+            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
+            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+
+        elif location == "BR": # Bottom Right 
+            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+
+        else: # Bottom Right (as Default)
+            print(f"Location '{location}' is not valid.\nResulting to default (BR).")
+            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+
+        return (int(text_x), int(text_y))
+
+    def add_text(self, text, location):
+        text_str = str(text)
+        text_coords = self.get_text_coords(text_str, location)
         # Put the text
         cv2.putText(self.image, text_str, text_coords, self.font,
                     self.font_scale, self.text_color, self.thickness,
                     self.line_type)
 
+    def get_data_for_frame(self, frame_counter):
+        current_time = self.data_interval * frame_counter
+
+        row_count = 0
+        while current_time > 0:
+            current_time -= 500
+            row_count += 1
+
+        self.time_stamp = self.data_table["idTime"][row_count]
+        self.heart_rate = self.data_table["idHeartrate"][row_count]
+        self.wattage = self.data_table["idPower"][row_count]
+
     def add_data_points(self, frame_counter):
         self.face_landmarks_dict[frame_counter] = {}
+        self.face_landmarks_dict[frame_counter]["TS"] = str(self.time_stamp)
+        self.face_landmarks_dict[frame_counter]["HR"] = str(self.heart_rate)
+        self.face_landmarks_dict[frame_counter]["PWR"] = str(self.wattage)
+
         try:
             for i in self.results.multi_face_landmarks:
                 for g in range(0, len(i.landmark)):
@@ -177,18 +234,21 @@ class Generator:
             pass
 
     def make_json_file(self):
-        out_filename = f'generateData_OUTPUT/{self.file_name}_trainingsData.json'
+        out_filename = f"generateData_OUTPUT/{self.file_name}_trainingsData.json"
         json.export_dump(self.face_landmarks_dict, out_filename)
 
 
-def auto_run():
+def get_user_path():
     print("\n"*3)
     vid = input("Provide the path to a video file\n"
                 "Example: C:/Users/admin/video/video.mp4\n"
                 "Path: ")
+    return vid
+
+def auto_run():
+    vid = get_user_path()
     gen = Generator(vid)
     gen.generate_data()
-
 
 if __name__ == '__main__':
     auto_run()
