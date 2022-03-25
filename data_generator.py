@@ -56,7 +56,8 @@ class Generator:
         self.capture = self.open_capture()
         self.encoder = self.make_encoder()
         self.data_table = self.make_panda_table()
-
+        
+        # Creating the HR Zone column
         self.maxhr = max(self.data_table["idHeartrate"])
         self.data_table['heartRateZone'] = self.data_table.apply(
             lambda row: 5 if (row.idHeartrate > (self.maxhr * 0.9)) else (
@@ -72,16 +73,17 @@ class Generator:
         return file_name
 
     def open_capture(self):
-
-        # resize video
+        # The video is resized to reduce processing time. 
         clip = mpe.VideoFileClip(self.vid_path)
-        print(clip.h)
-        if clip.h != 360:
-            # make the height 360px ( According to moviePy documenation The width is then computed so that the width/height ratio is conserved.)
+        if clip.h > 360:
+            # The height is set to 360P 
+            # (According to moviePy documenation, the width is then computed so that 
+            # the width/height ratio is conserved.)
+            # TODO: Aanpassen van video renaming issue
+            # TODO: Dismiss audio
             clip_resized = clip.resize(height=360)
             self.vid_path = self.vid_path + ".MP4"
             print(self.vid_path)
-
             clip_resized.write_videofile(self.vid_path)
 
         cap = cv2.VideoCapture(self.vid_path)
@@ -115,7 +117,10 @@ class Generator:
         return encoder
 
     def make_panda_table(self):
-        return pd.read_csv(f"test_data/220316_1023_JOS.csv", sep=";")
+        path = input("Provide the name to the CSV file\n"
+                "Example: 220316_1120_ROEL.csv\n"
+                "Path: ")
+        return pd.read_csv(f"test_data/{path}]", sep=";")
         return pd.read_csv(f"test_data/{self.file_name}.csv", sep=";")
 
 
@@ -241,8 +246,8 @@ class Generator:
             self.wattage = self.data_table["idPower"][row_count]
             self.hrz = self.data_table["heartRateZone"][row_count]
 
-        except:
-            pass
+        except Exception as e:
+            print(f"An error {e} was raised.")
 
     def add_data_points(self, frame_counter):
         self.face_landmarks_dict[frame_counter] = {}
