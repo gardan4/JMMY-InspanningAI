@@ -74,17 +74,23 @@ class Generator:
 
     def open_capture(self):
         # The video is resized to reduce processing time. 
+        print("")
         clip = mpe.VideoFileClip(self.vid_path)
         if clip.h > 360:
+            print(f"Downsampling required.\n"
+                  f"Current resolution: {clip.h}")
             # The height is set to 360P 
             # (According to moviePy documenation, the width is then computed so that 
             # the width/height ratio is conserved.)
             # TODO: Aanpassen van video renaming issue
             # TODO: Dismiss audio
             clip_resized = clip.resize(height=360)
-            self.vid_path = self.vid_path + ".MP4"
-            print(self.vid_path)
-            clip_resized.write_videofile(self.vid_path)
+            new_vid_path = self.vid_path[:self.vid_path.rfind('/')]
+            new_vid_path = new_vid_path + "/" + self.file_name + "_360P.mp4"
+            print(f"The new videofile will be saved to: \n"
+                  f"{new_vid_path}")
+            clip_resized.write_videofile(new_vid_path)
+            self.vid_path = new_vid_path
 
         cap = cv2.VideoCapture(self.vid_path)
         if not cap.isOpened():
@@ -118,11 +124,10 @@ class Generator:
 
     def make_panda_table(self):
         path = input("Provide the name to the CSV file\n"
-                "Example: 220316_1120_ROEL.csv\n"
+                "Example: C:/Users/admin/document/220316_1120_ROEL.csv\n"
                 "Path: ")
-        return pd.read_csv(f"test_data/{path}]", sep=";")
+        return pd.read_csv(path, sep=";")
         return pd.read_csv(f"test_data/{self.file_name}.csv", sep=";")
-
 
     def generate_data(self):
         # Editing the capture, frame by frame.
