@@ -4,8 +4,8 @@ import sys
 
 package_list = [
     "mediapipe",
-    "json",
     "pandas",
+    "moviepy",
     "opencv-python"
     ]
 

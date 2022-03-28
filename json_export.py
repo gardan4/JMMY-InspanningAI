@@ -1,6 +1,5 @@
 import json
 
-
 def export_dump(to_export, out_file):
     try:
         j = json.dumps(to_export)
