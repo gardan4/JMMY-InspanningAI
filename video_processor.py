@@ -7,6 +7,7 @@ class VideoProcessor():
         self.frame_height = None
         self.frame_width = None
         self.fps = None
+        self.data_interval = None
 
         self.vid_path = vid_path
 

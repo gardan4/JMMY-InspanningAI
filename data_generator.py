@@ -1,3 +1,4 @@
+from platform import processor
 import cv2
 import mediapipe as mp
 import os
@@ -93,11 +94,7 @@ class Generator:
             if self.results.multi_face_landmarks:
                 self.draw()
                 # Printing framecount every "x" frames:
-                if frame_counter%2500 == 0:
-                    print(f"Frame: {frame_counter}")
-                elif frame_counter%500 == 0:
-                    print(f"Frame: {frame_counter}")
-                elif frame_counter%100 == 0:
+                if frame_counter%250 == 0:
                     print(f"Frame: {frame_counter}")
 
                 self.get_data_for_frame(frame_counter)
@@ -108,7 +105,7 @@ class Generator:
                 self.add_text(frame_id, "BR")
 
                 # Write the IMG and save the facemesh coords
-                self.encoder.write(self.image)
+                self.processor.encoder.write(self.image)
                 self.add_data_points(frame_counter)
 
         # Closing and cleaning up
@@ -149,25 +146,25 @@ class Generator:
         text_size = cv2.getTextSize(text_str, self.font, self.font_scale, self.thickness)[0]
 
         if location == "TL":  # Top Left
-            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
-            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
+            text_x = int((self.processor.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
+            text_y = int((self.processor.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
 
         elif location == "TR":  # Top Right
-            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
-            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
+            text_x = int((self.processor.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.processor.frame_height + text_size[1] - self.standard_text_offset) * 0.15)
 
         elif location == "BL":  # Bottom Left 
-            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
-            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+            text_x = int((self.processor.frame_width - text_size[0] - self.standard_text_offset) * 0.05)
+            text_y = int((self.processor.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
 
         elif location == "BR":  # Bottom Right
-            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
-            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+            text_x = int((self.processor.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.processor.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
 
         else:  # Bottom Right (as Default)
             print(f"Location '{location}' is not valid.\nResulting to default (BR).")
-            text_x = int((self.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
-            text_y = int((self.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
+            text_x = int((self.processor.frame_width - text_size[0] - self.standard_text_offset) * 0.95)
+            text_y = int((self.processor.frame_height + text_size[1] - self.standard_text_offset) * 0.85)
 
         return (int(text_x), int(text_y))
 
@@ -180,7 +177,7 @@ class Generator:
                     self.line_type)
 
     def get_data_for_frame(self, frame_counter):
-        current_time = self.data_interval * frame_counter
+        current_time = self.processor.data_interval * frame_counter
 
         row_count = 0
         while current_time > 0:
