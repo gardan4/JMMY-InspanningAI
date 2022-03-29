@@ -1,16 +1,16 @@
 import cv2
 import mediapipe as mp
-import numpy as np
-import sys
 import os
-import time
 import json_export as json
 import pandas as pd
-import moviepy.editor as mpe
+import video_processor as vid_proc
 
 
 class Generator:
     def __init__(self, vid_path):
+        # Initiate the video processor
+        self.processor = vid_proc.VideoProcessor(vid_path)
+
         # Initial setup for MP
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_face_mesh = mp.solutions.face_mesh
@@ -37,24 +37,17 @@ class Generator:
         )
 
         # Setting up vars to filled later
-        self.frame_height = None
-        self.frame_width = None
-        self.fps = None
         self.results = None
         self.image = None
+
+        # Doing the same, but for the used vars
         self.time_stamp = None
         self.heart_rate = None
         self.wattage = None
         self.maxhr = None
-
-        # Initial setup for program
-        self.vid_path = vid_path
         self.face_landmarks_dict = {}
 
         # Running functions for setup
-        self.file_name = self.get_file_name()
-        self.capture = self.open_capture()
-        self.encoder = self.make_encoder()
         self.data_table = self.make_panda_table()
         
         # Creating the HR Zone column
@@ -66,76 +59,20 @@ class Generator:
                         2 if (row.idHeartrate > (self.maxhr * 0.6)) else (
                             1 if (row.idHeartrate > (self.maxhr * 0.5)) else (0))))), axis=1)
 
-    def get_file_name(self):
-        file_name = self.vid_path[self.vid_path.rfind('/') + 1:]
-        # Splits out the file-type designation
-        file_name, file_extension = file_name.split('.')
-        return file_name
-
-    def open_capture(self):
-        # The video is resized to reduce processing time. 
-        print("")
-        clip = mpe.VideoFileClip(self.vid_path)
-        if clip.h > 360:
-            print(f"Downsampling required.\n"
-                  f"Current resolution: {clip.h}")
-            # The height is set to 360P 
-            # (According to moviePy documenation, the width is then computed so that 
-            # the width/height ratio is conserved.)
-            # TODO: Aanpassen van video renaming issue
-            # TODO: Dismiss audio
-            clip_resized = clip.resize(height=360)
-            new_vid_path = self.vid_path[:self.vid_path.rfind('/')]
-            new_vid_path = new_vid_path + "/" + self.file_name + "_360P.mp4"
-            print(f"The new videofile will be saved to: \n"
-                  f"{new_vid_path}")
-            clip_resized.write_videofile(new_vid_path)
-            self.vid_path = new_vid_path
-
-        cap = cv2.VideoCapture(self.vid_path)
-        if not cap.isOpened():
-            print("Error opening video stream or file")
-            raise TypeError
-        return cap
-
-    def make_encoder(self):
-        # Gathering some info about the input-file
-        self.frame_width = int(self.capture.get(3))
-        self.frame_height = int(self.capture.get(4))
-        self.fps = int(self.capture.get(5))
-        self.data_interval = int(1000 / self.fps)
-
-        # Check and make sure the output folder exists.
-        try:
-            if not os.path.exists('generateData_OUTPUT'):
-                os.makedirs('generateData_OUTPUT')
-
-        # If we can't create the folder we raise an error.
-        except OSError:
-            print("Error: Can't create a folder here.")
-
-        # Set the encoding type and filename (with the folder)
-        fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-        out_filename = f'generateData_OUTPUT/{self.file_name}_trainingsData.mp4'
-
-        # Make the video encoder:
-        encoder = cv2.VideoWriter(out_filename, fourcc, self.fps, (self.frame_width, self.frame_height))
-        return encoder
-
     def make_panda_table(self):
         path = input("Provide the name to the CSV file\n"
                 "Example: C:/Users/admin/document/220316_1120_ROEL.csv\n"
                 "Path: ")
         return pd.read_csv(path, sep=";")
-        return pd.read_csv(f"test_data/{self.file_name}.csv", sep=";")
 
     def generate_data(self):
         # Editing the capture, frame by frame.
         frame_counter = 0
-        while self.capture.isOpened():
-            success, self.image = self.capture.read()
+        self.processor.capture
+        while self.processor.capture.isOpened():
+            success, self.image = self.processor.capture.read()
             if not success:
-                print("Finished. ")
+                print("Finished.")
                 break
 
             # Flipping just in case it's a webcam feed
@@ -155,7 +92,12 @@ class Generator:
             # IF the list with landmarks exists, we draw our information on it
             if self.results.multi_face_landmarks:
                 self.draw()
-                if frame_counter%100 == 0:
+                # Printing framecount every "x" frames:
+                if frame_counter%2500 == 0:
+                    print(f"Frame: {frame_counter}")
+                elif frame_counter%500 == 0:
+                    print(f"Frame: {frame_counter}")
+                elif frame_counter%100 == 0:
                     print(f"Frame: {frame_counter}")
 
                 self.get_data_for_frame(frame_counter)
@@ -172,8 +114,7 @@ class Generator:
         # Closing and cleaning up
         self.make_json_file()
         self.face_mesh.close()
-        self.capture.release()
-        self.encoder.release()
+        self.processor.cleanup()
 
     def draw(self):
         for face_landmarks in self.results.multi_face_landmarks:
@@ -273,7 +214,7 @@ class Generator:
             pass
 
     def make_json_file(self):
-        out_filename = f"generateData_OUTPUT/{self.file_name}_trainingsData.json"
+        out_filename = f"generateData_OUTPUT/{self.processor.file_name}_trainingsData.json"
         json.export_dump(self.face_landmarks_dict, out_filename)
 
 
