@@ -1,6 +1,5 @@
 import json
 
-
 def export_dump(to_export, out_file):
     try:
         j = json.dumps(to_export)
@@ -9,7 +8,7 @@ def export_dump(to_export, out_file):
             f.close()
 
     except Exception as e:
-        print(e)
+        print(f"ERROR: {e}")
 
 
 # Currently, not used
